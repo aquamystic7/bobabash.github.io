@@ -48,6 +48,16 @@
 
     await wait(ms - (Date.now() - t0));
 
+    // a link back to this very page (sites/17 opened from a QR) would loop: the project lives at sites/17/
+    if (dest.k === 'go' && /^https?:\/\//i.test(dest.u || '')) {
+      try {
+        var u = new URL(dest.u);
+        if (u.host === location.host && u.pathname.replace(/\.html$/, '').replace(/\/+$/, '') === location.pathname.replace(/\.html$/, '').replace(/\/+$/, '')) {
+          u.pathname = u.pathname.replace(/\.html$/, '').replace(/\/+$/, '') + '/';
+          dest.u = u.href;
+        }
+      } catch (e) {}
+    }
     if (dest.k === 'go' && /^https?:\/\//i.test(dest.u || '')) {
       var host = '';
       try { host = new URL(dest.u).hostname.replace(/^www\./, ''); } catch (e) {}
