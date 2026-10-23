@@ -3,6 +3,7 @@
 // 3. ask the dashboard live where to go (also counts the tap), fall back to map.json   4. redirect
 (function () {
   var base = document.currentScript.src.replace(/go\.js.*$/, '');
+  var LIVE = 'https://cards.boba-bash.xyz'; // the dashboard that decides where each card goes
   var seg = location.pathname.replace(/\/+$/, '').split('/').pop();
   var id = /^\d{1,5}$/.test(seg) ? Number(seg) : null;
   var $ = function (x) { return document.getElementById(x) || document.createElement('span'); };
@@ -29,17 +30,19 @@
 
   (async function () {
     var map = null, dest = null;
-    try { map = await getJson(base + 'map.json?t=' + Date.now(), 4000); } catch (e) {}
-    var ms = map && isFinite(map.s) ? map.s : 5000;
-
     var bar = $('bar');
-    bar.style.transition = 'width ' + ms + 'ms linear';
+    bar.style.transition = 'width 5000ms linear';
     requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = '100%'; }); });
 
-    if (id && map && /^https:\/\//.test(map.live || '')) {
+    // ask the dashboard straight away (it also counts the tap); map.json loads alongside as the backup
+    var asked = id ? getJson(LIVE + '/api/go/' + id, 4000).catch(function () { return null; }) : Promise.resolve(null);
+    try { map = await getJson(base + 'map.json?t=' + Date.now(), 4000); } catch (e) {}
+    var ms = map && isFinite(map.s) ? map.s : 5000;
+    dest = await asked;
+    if (!dest && id && map && /^https:\/\//.test(map.live || '') && map.live.replace(/\/$/, '') !== LIVE) {
       try { dest = await getJson(map.live.replace(/\/$/, '') + '/api/go/' + id, 2500); } catch (e) {}
     }
-    if (!dest && id && map) dest = (map.cards && map.cards[id]) || { k: 'missing' };
+    if (!dest && id && map && map.cards) dest = map.cards[id] || null;
     if (!dest) dest = { k: id ? 'down' : 'missing' };
     if (dest.m) $('s').textContent = dest.m; // the owner's own splash line
 
