@@ -70,8 +70,7 @@ You don't need a PR for that. Log in at [cards.boba-bash.xyz/me](https://cards.b
 
 | Address | What it is |
 | --- | --- |
-| `bobabash.github.io/7` | The link in the NFC chip. Shows the Boba Bash logo, asks the dashboard where card 7 goes, then sends you there. |
-| `bobabash.github.io/sites/7` | The link in the printed QR code. Same thing (`sites/7.html`). |
+| `bobabash.github.io/sites/7` | What the NFC chip and the printed QR code open (`sites/7.html`). Shows the Boba Bash logo, asks the dashboard where card 7 goes, then sends you there. |
 | `bobabash.github.io/sites/7/` | Card 7's project page (`sites/7/index.html`), the default destination. |
 
 The dashboard at [cards.boba-bash.xyz](https://cards.boba-bash.xyz) decides where every card goes, live. If it can't be reached, the pages fall back to `map.json` in this repo. The code is at [brahmtej2009/bobabash-cards](https://github.com/brahmtej2009/bobabash-cards).
