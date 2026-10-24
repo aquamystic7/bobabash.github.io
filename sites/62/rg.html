@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://gstatic.com" crossorigin>
+  <link href="https://googleapis.com" rel="stylesheet">
+  <style>
+    /* body {
+      
+      background-size: cover;
+      min-height: 100vh;
+      background-position: center center;
+    } */
+
+    .Rg {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      opacity: 0;
+      opacity: 0;
+      display: inline-block;
+      position: relative
+    }
+
+    
+
+
+    /* GLOBAL STYLES */
+    body {
+      background-image: url('./903e69757054e043db0ec2928a8f7f46.jpg');
+      padding-top: 5em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      background-size: cover;
+      min-height: 100vh;
+      background-position: center center;
+    }
+
+    /* DEMO-SPECIFIC STYLES */
+    .typewriter h1 {
+      color: #8A0303;
+      font-family: monospace;
+      overflow: hidden;
+      /* Ensures the content is not revealed until the animation */
+      border-right: .15em solid orange;
+      /* The typwriter cursor */
+      white-space: nowrap;
+      /* Keeps the content on a single line */
+      margin: 0 auto;
+      /* Gives that scrolling effect as the typing happens */
+      letter-spacing: .15em;
+      font-size: 100px;
+      /* Adjust as needed */
+      animation:
+        typing 3.5s steps(30, end),
+        blink-caret .5s step-end infinite;
+
+
+    }
+
+    .typewriter {
+      margin-right: 200px;
+
+
+    }
+
+    /* The typing effect */
+    @keyframes typing {
+      from {
+        width: 0
+      }
+
+      to {
+        width: 100%
+      }
+    }
+
+    /* The typewriter cursor effect */
+    @keyframes blink-caret {
+
+      from,
+      to {
+        border-color: transparent
+      }
+
+      50% {
+        border-color: orange
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div style="opacity: 0; display: inline-block; position: relative;" class="Rg">
+    <a href="./rg2.html" style="display: block;">
+      <img src="./Screenshot 2026-10-24 at 12.18.53 PM.png" alt="Hidden Link">
+      <h1 class="R"></h1>
+    </a>
+  </div>
+
+
+  <div class="typewriter">
+    <h1>"ENTER" TO GET KEY'S !!</h1>
+  </div>
+
+  <audio id="key-audio">
+    <source src="./simplesound-horror-trailer-443327.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+</body>
+<!-- <script>
+  const message = "Dare to Open it !";
+  let index = 0;
+
+  function type() {
+
+    if (index < message.length) {
+      document.getElementById("text").innerHTML += message.charAt(index);
+      index++;
+
+      setTimeout(type, 100);
+    }
+  }
+
+  type();
+</script> -->
+<script>
+  window.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      window.location.href = "rg2.html";
+    }
+  });
+
+  const audio = document.getElementById("key-audio");
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key.toLowerCase() === "a") {
+            audio.currentTime = 0;
+            audio.play().catch(error => console.log(error));
+        }
+    });
+</script>
+
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Haunting | Horror Book</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #151515;
+            color: white;
+        }
+
+        /* header {
+            padding: 20px 50px;
+            background: #0b0b0b;
+            color: #d62828;
+            font-size: 24px;
+            font-weight: bold;
+        } */
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            padding: 60px 10%;
+        }
+
+        .book img {
+            width: 280px;
+            border-radius: 8px;
+            box-shadow: 0 0 25px #650000;
+        }
+
+        .content {
+            max-width: 500px;
+        }
+
+        .content h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            color: #e63946;
+        }
+
+        .genre {
+            color: #aaaaaa;
+            margin-bottom: 25px;
+        }
+
+        .content p {
+            color: #dddddd;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        button {
+            background: #a4161a;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: #e63946;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777777;
+            border-top: 1px solid #333333;
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+                padding: 35px 20px;
+            }
+
+            .content h1 {
+                font-size: 36px;
+            }
+
+            header {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- <header>THE DARK LIBRARY</header> -->
+
+    <div class="container">
+
+        <div class="book">
+            <img src="https://placehold.co/400x600/1a0505/e63946?text=THE+HAUNTING"
+                alt="The Haunting horror book cover">
+        </div>
+
+        <div class="content">
+            <p class="genre">HORROR · MYSTERY · SUPERNATURAL</p>
+
+            <h1>The Haunting</h1>
+
+            <p>
+                Some houses hold secrets. Others refuse to let them go.
+            </p>
+
+            <p>
+                When a young writer moves into an abandoned mansion,
+                she expects to find inspiration for her next novel.
+                Instead, she discovers strange whispers, mysterious
+                shadows, and a locked room that appears to change
+                every night.
+            </p>
+
+            <p>
+                As the truth slowly unfolds, she realizes that the
+                house is not empty—and something inside knows her name.
+            </p>
+
+            <p><strong>Author:</strong> Eleanor Black</p>
+            <p><strong>Rating:</strong> ★★★★☆ 4.5/5</p>
+
+            <button onclick="alert('Your journey into the darkness begins...')">
+                Discover the Story
+            </button>
+
+            <audio id="key-audio">
+                <!-- <source src="./simplesound-horror-trailer-443327.mp3" type="audio/ogg"> -->
+                <source src="./simplesound-horror-trailer-443327.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+
+    </div>
+    <script>
+        window.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                window.location.href = "rg.html";
+            }
+        });
+        const audio = document.getElementById('key-audio');
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key === '' || event.key === 'a') {
+
+                event.preventDefault();
+
+                audio.play().catch(error => {
+                    console.log("Audio playback failed:", error);
+                });
+            }
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>
