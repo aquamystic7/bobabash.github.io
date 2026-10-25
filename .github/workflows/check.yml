@@ -1,72 +1,30 @@
 name: check
-# Runs with the repo's own copy of this file (pull_request_target), so a pull request can't change the rules.
-# Nothing from the pull request is ever run: the script only reads file names, sizes and types.
-on:
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+on: pull_request
 permissions:
-  contents: write
-  pull-requests: write
-  pages: write
-concurrency:
-  group: pr-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  contents: read
 jobs:
-  check:
+  own-folder-only:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Check the files
+      - name: PR only touches one card folder under sites/
         env:
-          PR: ${{ github.event.pull_request.number }}
           BASE: ${{ github.event.pull_request.base.sha }}
-          OUT: ${{ runner.temp }}/pr
-        run: bash .github/check-pr.sh
-      - name: Is it their card?
-        id: owner
-        env:
-          OUT: ${{ runner.temp }}/pr
-          AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
         run: |
-          folder=$(cat "$OUT/folder")
-          match=false
-          if [ -n "$folder" ]; then
-            match=$(curl -fsS --max-time 15 "https://cards.boba-bash.xyz/api/github-check?card=$folder&login=$AUTHOR" | jq -r '.match // false' || echo false)
-          fi
-          echo "match=$match" >> "$GITHUB_OUTPUT"
-      - name: Merge or explain
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          PR: ${{ github.event.pull_request.number }}
-          OUT: ${{ runner.temp }}/pr
-          MATCH: ${{ steps.owner.outputs.match }}
-        run: |
-          folder=$(cat "$OUT/folder")
-          live="https://bobabash.github.io/sites/$folder/"
-          if [ -s "$OUT/fail" ]; then
-            verdict="fail"
-            msg=$'### Not merged yet: fix these and push again\n\n'"$(cat "$OUT/fail")"$'\n\nThe guide is in the [README](https://github.com/'"$REPO"$'#readme).'
-          elif [ -s "$OUT/review" ]; then
-            verdict="review"
-            msg=$'### Looks fine, an organiser will check it\n\n'"$(cat "$OUT/review")"
-          elif [ "$MATCH" != "true" ]; then
-            verdict="review"
-            msg=$'### Checks passed. An organiser will merge it\n\nTo have pull requests merge by themselves next time, add your GitHub username (`'"${{ github.event.pull_request.user.login }}"$'`) at [cards.boba-bash.xyz/me](https://cards.boba-bash.xyz/me) → Account, then push again.'
-          else
-            verdict="merge"
-            msg=$'### Merged! 🧋\n\nLive in a minute or two at '"$live"$' and your card opens it.'
-          fi
-          # one comment per pull request, updated each run
-          marker='<!-- boba-check -->'
-          body="$marker"$'\n'"$msg"
-          cid=$(gh api "repos/$REPO/issues/$PR/comments" --paginate --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -1)
-          if [ -n "$cid" ]; then gh api -X PATCH "repos/$REPO/issues/comments/$cid" -f body="$body" >/dev/null; else gh api "repos/$REPO/issues/$PR/comments" -f body="$body" >/dev/null; fi
-          if [ "$verdict" = merge ]; then
-            gh pr merge "$PR" --repo "$REPO" --squash --subject "grn$folder: $(gh pr view "$PR" --repo "$REPO" --json title --jq .title) (#$PR)"
-            # a merge made by this token doesn't start a Pages build by itself
-            gh api -X POST "repos/$REPO/pages/builds" >/dev/null || true
-          fi
-          [ "$verdict" != fail ]
+          set -euo pipefail
+          files=$(git diff --name-only --no-renames "$BASE...$HEAD")
+          [ -n "$files" ] || { echo "No changes."; exit 0; }
+          bad=$(echo "$files" | grep -Ev '^sites/[0-9]+/' || true)
+          if [ -n "$bad" ]; then echo "::error::Only edit your own folder, sites/<your card number>/. These files are outside it:"; echo "$bad"; exit 1; fi
+          folders=$(echo "$files" | cut -d/ -f2 | sort -u)
+          if [ "$(echo "$folders" | wc -l)" -ne 1 ]; then echo "::error::One card folder per PR. This one touches: $(echo $folders)"; exit 1; fi
+          while IFS= read -r f; do
+            [ -e "$f" ] || continue
+            if [ -L "$f" ]; then echo "::error::No symlinks: $f"; exit 1; fi
+            size=$(stat -c %s "$f")
+            if [ "$size" -gt 5242880 ]; then echo "::error::$f is over 5 MB"; exit 1; fi
+          done <<< "$files"
+          echo "Card $folders looks good."
